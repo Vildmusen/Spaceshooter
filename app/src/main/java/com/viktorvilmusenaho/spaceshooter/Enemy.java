@@ -22,6 +22,13 @@ public class Enemy extends BitmapEntity {
                 break;
         }
         loadBitmap(resID, ENEMY_HEIGHT);
+        respawn();
+    }
+
+    @Override
+    void respawn() {
+        _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
+        _y = _game._rng.nextInt(Game.STAGE_HEIGHT - ENEMY_HEIGHT);
     }
 
     @Override
@@ -31,5 +38,10 @@ public class Enemy extends BitmapEntity {
         if (right() < 0) {
             _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
         }
+    }
+
+    @Override
+    void onCollision(Entity that) {
+        _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
     }
 }

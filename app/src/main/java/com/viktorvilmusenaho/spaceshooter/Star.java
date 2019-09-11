@@ -9,8 +9,8 @@ public class Star extends Entity {
     private float _radius;
 
     Star(){
-        _x = _game._rng.nextInt(_game.STAGE_WIDTH);
-        _y = _game._rng.nextInt(_game.STAGE_HEIGHT);
+        _x = _game._rng.nextInt(Game.STAGE_WIDTH);
+        _y = _game._rng.nextInt(Game.STAGE_HEIGHT);
         _radius = _game._rng.nextInt(6) + 2; //TODO magic values
         _width = _radius * 2;
         _height = _radius * 2;
@@ -21,7 +21,7 @@ public class Star extends Entity {
     void update() {
         _velX = -(_game._playerSpeed);
         _x += _velX;
-        _x = Utils.wrap(_x, 0-_width, _game.STAGE_WIDTH);
+        _x = Utils.wrap(_x, 0-_width, Game.STAGE_WIDTH);
     }
 
     @Override
