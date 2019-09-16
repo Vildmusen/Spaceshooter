@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Spaceshooter</string>
     <string name="start_game">Start Game!</string>
+    <string name="high_score_default_value">Longest Distance Traveled: 0km</string>
 </resources>

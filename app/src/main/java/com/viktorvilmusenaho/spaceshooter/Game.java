@@ -1,7 +1,7 @@
 package com.viktorvilmusenaho.spaceshooter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,12 +16,12 @@ import java.util.Random;
 public class Game extends SurfaceView implements Runnable {
 
     public static final String TAG = "Game";
-    public static final String PREFS = "com.viktorvilmusenaho.spaceshooter";
-    public static final String LONGEST_DIST = "longest_distance";
     static final int STAGE_WIDTH = 1280; // TODO: Move game setting to resources
     static final int STAGE_HEIGHT = 720;
-    static final int STAR_COUNT = 40;
+    static final int STAR_COUNT = 60;
+    static final int METEOR_COUNT = 5;
     static final int ENEMY_COUNT = 8;
+    static final float TEXT_SIZE = 48f;
 
     private Thread _gameThread = null;
     private volatile boolean _isRunning = false;
@@ -29,50 +29,53 @@ public class Game extends SurfaceView implements Runnable {
     private Paint _paint = new Paint();
     private Canvas _canvas = null;
 
-    private ArrayList<Entity> _entities = new ArrayList<Entity>();
+    private ArrayList<Entity> _collidableEntities = new ArrayList<Entity>();
+    private ArrayList<Entity> _backgroundEntities = new ArrayList<Entity>();
     private Player _player;
     Random _rng = new Random();
+    UI _ui;
     private JukeBox _jukebox = null;
-    private SharedPreferences _prefs = null;
-    private SharedPreferences.Editor _editor = null;
-
 
     volatile boolean _isBoosting = false;
     float _playerSpeed = 0f;
     int _distanceTraveled = 0;
-    int _maxDistanceTraveled = 0;
     private boolean _gameOver = false;
 
     public Game(Context context) {
         super(context);
         Entity._game = this;
+        _ui = new UI(context);
         _holder = getHolder();
         _holder.setFixedSize(STAGE_WIDTH, STAGE_HEIGHT);
         _jukebox = new JukeBox(context);
-
-        _prefs = context.getSharedPreferences(PREFS, context.MODE_PRIVATE);
-        _editor = _prefs.edit();
-
-        //TODO Separate
-        for (int i = 0; i < STAR_COUNT; i++) {
-            _entities.add(new Star());
-        }
-        for (int i = 0; i < ENEMY_COUNT; i++) {
-            _entities.add(new Enemy());
-        }
-        _player = new Player();
+        populateEntities();
         restart();
     }
 
-    private void restart(){
-        for (Entity e : _entities) {
+    private void populateEntities() {
+        for (int i = 0; i < STAR_COUNT; i++) {
+            _backgroundEntities.add(new Star());
+        }
+        for (int i = 0; i < ENEMY_COUNT; i++) {
+            _collidableEntities.add(new Enemy());
+        }
+        for (int i = 0; i < METEOR_COUNT; i++) {
+            _collidableEntities.add(new EnemyMeteor());
+        }
+        _player = new Player();
+    }
+
+    private void restart() {
+        for (Entity e : _backgroundEntities) {
+            e.respawn();
+        }
+        for (Entity e : _collidableEntities) {
             e.respawn();
         }
         _player.respawn();
         _distanceTraveled = 0;
-        _maxDistanceTraveled = _prefs.getInt(LONGEST_DIST, 0);
         _gameOver = false;
-        // TODO sound effect for starting game
+        _jukebox.play(_jukebox.GAME_START);
     }
 
     @Override
@@ -83,13 +86,15 @@ public class Game extends SurfaceView implements Runnable {
         }
     }
 
-
     private void update() {
-        if(_gameOver){
+        if (_gameOver) {
             return;
         }
         _player.update();
-        for (Entity e : _entities) {
+        for (Entity e : _backgroundEntities) {
+            e.update();
+        }
+        for (Entity e : _collidableEntities) {
             e.update();
         }
         _distanceTraveled += _playerSpeed;
@@ -98,22 +103,18 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private void checkGameOver() {
-        if(_player._health < 0){
+        if (_player._health < 0) {
             _gameOver = true;
-            if(_distanceTraveled > _maxDistanceTraveled){
-                _maxDistanceTraveled = _distanceTraveled;
-                _editor.putInt(LONGEST_DIST, _maxDistanceTraveled);
-                _editor.apply();
-            }
-            // TODO sound effect game over
+            _ui.saveHighScore(_distanceTraveled);
+            _jukebox.play(_jukebox.GAME_OVER);
         }
     }
 
     private void checkCollisions() {
         Entity temp = null;
-        for (int i = STAR_COUNT; i < _entities.size(); i++) { // 0 - STAR_COUNT == background entities TODO separate maybe
-            temp = _entities.get(i);
-            if(_player.isColliding(temp)){
+        for (int i = 0; i < _collidableEntities.size(); i++) {
+            temp = _collidableEntities.get(i);
+            if (_player.isColliding(temp) && _player._graceCounter == 0) {
                 _player.onCollision(temp);
                 temp.onCollision(_player);
                 _jukebox.play(JukeBox.CRASH);
@@ -128,26 +129,31 @@ public class Game extends SurfaceView implements Runnable {
 
         _canvas.drawColor(Color.BLACK);
 
-        for (Entity e : _entities) {
+        for (Entity e : _backgroundEntities) {
             e.render(_canvas, _paint);
         }
-        _player.render(_canvas, _paint);
+        for (Entity e : _collidableEntities) {
+            e.render(_canvas, _paint);
+        }
+        if (_player._graceCounter % 2 != 1) { // "blink" every other frame during players grace period
+            _player.render(_canvas, _paint);
+        }
         renderHUD(_canvas, _paint);
         _holder.unlockCanvasAndPost(_canvas);
     }
 
-    private void renderHUD(final Canvas canvas, final Paint paint){
-        float textSize = 48f;
+    @SuppressLint("DefaultLocale")
+    private void renderHUD(final Canvas canvas, final Paint paint) {
         paint.setColor(Color.WHITE);
         paint.setTextAlign(Paint.Align.LEFT);
-        paint.setTextSize(textSize);
-        if(!_gameOver) {
-            canvas.drawText("Health: " + _player._health, 10, 48, paint); //TODO resource
-            canvas.drawText("Distance: " + _distanceTraveled, 10, textSize*2, paint);
+        paint.setTextSize(TEXT_SIZE);
+        if (!_gameOver) {
+            canvas.drawText(String.format("%s%d", UI.HEALTH, _player._health), 10, TEXT_SIZE, paint);
+            canvas.drawText(String.format("%s%d", UI.DISTANCE, _distanceTraveled), 10, TEXT_SIZE * 2, paint);
         } else {
-            final float centerY = STAGE_HEIGHT/2;
-            canvas.drawText("GAME OVER!", STAGE_WIDTH/2, centerY, paint); //TODO resource
-            canvas.drawText("(press to restart)", STAGE_WIDTH/2, centerY + textSize, paint); //TODO resource
+            final float centerY = STAGE_HEIGHT / 2;
+            canvas.drawText(UI.GAME_OVER, STAGE_WIDTH / 2, centerY, paint);
+            canvas.drawText(UI.RESTART_MESSAGE, STAGE_WIDTH / 2, centerY + TEXT_SIZE, paint);
         }
     }
 
@@ -180,7 +186,10 @@ public class Game extends SurfaceView implements Runnable {
         Log.d(TAG, "onDestroy");
         _gameThread = null;
 
-        for (Entity e : _entities) {
+        for (Entity e : _backgroundEntities) {
+            e.destroy();
+        }
+        for (Entity e : _collidableEntities) {
             e.destroy();
         }
         _jukebox.destroy();
@@ -192,7 +201,7 @@ public class Game extends SurfaceView implements Runnable {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP: //finger lifted
                 _isBoosting = false;
-                if(_gameOver){
+                if (_gameOver) {
                     restart();
                 }
                 break;

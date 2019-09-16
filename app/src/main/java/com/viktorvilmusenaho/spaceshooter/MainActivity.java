@@ -20,9 +20,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startButton.setOnClickListener(this);
 
         final TextView high_score = (TextView) findViewById(R.id.high_score_txt);
-        SharedPreferences prefs = getSharedPreferences(Game.PREFS, Context.MODE_PRIVATE);
-        int longestDistance = prefs.getInt(Game.LONGEST_DIST, 0);
-        high_score.setText("Longest Distance Traveled: " + longestDistance + "km");
+        SharedPreferences prefs = getSharedPreferences(UI.PREFS, Context.MODE_PRIVATE);
+        int longestDistance = prefs.getInt(UI.LONGEST_DIST, 0);
+        high_score.setText(String.format("Longest Distance Traveled: %skm", longestDistance));
     }
 
     @Override

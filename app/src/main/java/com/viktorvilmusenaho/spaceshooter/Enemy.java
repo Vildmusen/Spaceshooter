@@ -4,13 +4,16 @@ public class Enemy extends BitmapEntity {
 
     private final static int ENEMY_HEIGHT = 80;
     private final static int ENEMY_SPAWN_OFFSET = Game.STAGE_WIDTH;
+    private final static int ENEMY_SPRITE_COUNT = 3;
+
+    private int _patternCounter = 0;
 
     Enemy() {
         super();
         _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
         _y = _game._rng.nextInt(Game.STAGE_HEIGHT - ENEMY_HEIGHT);
         int resID = R.drawable.spaceship1_2;
-        switch (_game._rng.nextInt(3)) {
+        switch (_game._rng.nextInt(ENEMY_SPRITE_COUNT)) {
             case 0:
                 resID = R.drawable.spaceship1_2;
                 break;
@@ -35,6 +38,7 @@ public class Enemy extends BitmapEntity {
     void update() {
         _velX = -(_game._playerSpeed);
         _x += _velX;
+
         if (right() < 0) {
             _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
         }
@@ -42,6 +46,6 @@ public class Enemy extends BitmapEntity {
 
     @Override
     void onCollision(Entity that) {
-        _x = Game.STAGE_WIDTH + _game._rng.nextInt(ENEMY_SPAWN_OFFSET);
+        respawn();
     }
 }

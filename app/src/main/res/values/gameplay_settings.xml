@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="player_height">100</integer>
+    <integer name="player_health">3</integer>
+    <integer name="player_starting_position">40</integer>
+    <string name="player_starting_acceleration">1.1</string>
+</resources>

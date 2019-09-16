@@ -13,6 +13,8 @@ public class JukeBox {
     SoundPool _soundPool = null;
     private static final int MAX_STREAMS = 3;
     static int CRASH = 0;
+    static int GAME_START = 0;
+    static int GAME_OVER = 0;
 
     JukeBox(final Context context) {
         AudioAttributes attr = new AudioAttributes.Builder()
@@ -30,8 +32,12 @@ public class JukeBox {
         try {
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
-            descriptor = assetManager.openFd("crash.wav");
+            descriptor = assetManager.openFd("crash2.wav");
             CRASH = _soundPool.load(descriptor, 1);
+            descriptor = assetManager.openFd("game_over.wav");
+            GAME_OVER = _soundPool.load(descriptor, 1);
+            descriptor = assetManager.openFd("game_start.ogg");
+            GAME_START = _soundPool.load(descriptor, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
