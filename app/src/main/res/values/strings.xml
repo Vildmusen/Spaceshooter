@@ -1,5 +1,16 @@
 <resources>
+    <!--Start screen strings-->
     <string name="app_name">Spaceshooter</string>
     <string name="start_game">Start Game!</string>
     <string name="high_score_default_value">Longest Distance Traveled: 0km</string>
+
+    <!--Shared preferences information-->
+<!--    <string name="shared_preferences">com.viktorvilmusenaho.spaceshooter</string>-->
+<!--    <string name="longest_distance_preference">longest_distance</string>-->
+
+    <!--Game HUD strings-->
+    <string name="game_over_message">GAME OVER!</string>
+    <string name="restart_message">(Tap screen to restart)</string>
+    <string name="health_text">Health: </string>
+    <string name="distance_text">Distance: </string>
 </resources>

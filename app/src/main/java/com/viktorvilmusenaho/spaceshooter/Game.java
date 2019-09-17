@@ -16,12 +16,12 @@ import java.util.Random;
 public class Game extends SurfaceView implements Runnable {
 
     public static final String TAG = "Game";
-    static final int STAGE_WIDTH = 1280; // TODO: Move game setting to resources
-    static final int STAGE_HEIGHT = 720;
-    static final int STAR_COUNT = 60;
-    static final int METEOR_COUNT = 5;
-    static final int ENEMY_COUNT = 8;
-    static final float TEXT_SIZE = 48f;
+    final int STAGE_WIDTH = getResources().getInteger(R.integer.stage_width);
+    final int STAGE_HEIGHT = getResources().getInteger(R.integer.stage_height);
+    final int STAR_COUNT = getResources().getInteger(R.integer.star_count);
+    final int METEOR_COUNT = getResources().getInteger(R.integer.meteor_count);
+    final int ENEMY_COUNT = getResources().getInteger(R.integer.enemy_count);
+    final float TEXT_SIZE = (float) getResources().getInteger(R.integer.text_size);
 
     private Thread _gameThread = null;
     private volatile boolean _isRunning = false;
@@ -54,15 +54,15 @@ public class Game extends SurfaceView implements Runnable {
 
     private void populateEntities() {
         for (int i = 0; i < STAR_COUNT; i++) {
-            _backgroundEntities.add(new Star());
+            _backgroundEntities.add(new Star(getContext()));
         }
         for (int i = 0; i < ENEMY_COUNT; i++) {
-            _collidableEntities.add(new Enemy());
+            _collidableEntities.add(new Enemy(getContext()));
         }
         for (int i = 0; i < METEOR_COUNT; i++) {
-            _collidableEntities.add(new EnemyMeteor());
+            _collidableEntities.add(new EnemyMeteor(getContext()));
         }
-        _player = new Player();
+        _player = new Player(getContext());
     }
 
     private void restart() {

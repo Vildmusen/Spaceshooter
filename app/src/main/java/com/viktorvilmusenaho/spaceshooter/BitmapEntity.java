@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class BitmapEntity extends Entity {
+public abstract class BitmapEntity extends Entity {
 
     protected Bitmap _bitmap = null;
 

@@ -1,23 +1,36 @@
 package com.viktorvilmusenaho.spaceshooter;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 public class EnemyMeteor extends BitmapEntity {
 
-    private final static int ENEMY_HEIGHT = 40;
-    private final static float METEOR_VELOCITY = 4;
+    private static int METEOR_HEIGHT = 40;
+    private static float METEOR_VELOCITY = 4;
 
-    EnemyMeteor() {
+    EnemyMeteor(Context context) {
         super();
+        loadResources(context);
         _velX = -(METEOR_VELOCITY / 2);
         _velY = METEOR_VELOCITY;
         int resID = R.drawable.meteor2;
-        loadBitmap(resID, ENEMY_HEIGHT);
+        loadBitmap(resID, METEOR_HEIGHT);
         respawn();
+    }
+
+    private void loadResources(Context context){
+        try{
+            METEOR_HEIGHT = context.getResources().getInteger(R.integer.meteor_height);
+            METEOR_VELOCITY = (float) context.getResources().getInteger(R.integer.meteor_velocity);
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     void respawn() {
-        _x = _game._rng.nextInt(Game.STAGE_WIDTH / 2) + _game.STAGE_WIDTH * 2;
-        _y = -(_game._rng.nextInt(Game.STAGE_HEIGHT));
+        _x = _game._rng.nextInt(_game.STAGE_WIDTH / 2) + _game.STAGE_WIDTH;
+        _y = -(_game._rng.nextInt(_game.STAGE_HEIGHT));
     }
 
     @Override

@@ -1,28 +1,50 @@
 package com.viktorvilmusenaho.spaceshooter;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 public class Player extends BitmapEntity {
 
-    private final static int PLAYER_HEIGHT = 100;
-    private final static int PLAYER_HEALTH = 3;
-    private final static int STARTING_POSITION = 40;
-    private final static float ACC = 1.15f;
-    private final static float MIN_VEL = 1f;
-    private final static float MAX_VEL = 15f;
-    private final static float GRAVITY = 1.1f;
-    private final static float LIFT = -(GRAVITY * 2);
-    private final static float DRAG = 0.97f;
-    private static final int RECOVERY_FRAMES = 64;
+    private static int PLAYER_HEIGHT = 100;
+    private static int PLAYER_HEALTH = 3;
+    private static int STARTING_POSITION = 40;
+    private static float ACC = 1.1f;
+    private static float MIN_VEL = 1f;
+    private static float MAX_VEL = 15f;
+    private static float GRAVITY = 1.1f;
+    private static float LIFT = -(GRAVITY * 2);
+    private static float DRAG = 0.97f;
+    private static int RECOVERY_FRAMES = 64;
 
     private Bitmap _bitmap = null;
     int _health = PLAYER_HEALTH;
     int _graceCounter = 0;
 
-    Player(){
+    Player(Context context){
         super();
+        loadResources(context);
         loadBitmap(R.drawable.angler_ship, PLAYER_HEIGHT);
         respawn();
+    }
+
+    private void loadResources(Context context){
+        try{
+            PLAYER_HEIGHT = context.getResources().getInteger(R.integer.player_height);
+            PLAYER_HEALTH = context.getResources().getInteger(R.integer.player_health);
+            STARTING_POSITION = context.getResources().getInteger(R.integer.player_starting_position);
+            RECOVERY_FRAMES = context.getResources().getInteger(R.integer.recovery_frames);
+            try{
+                ACC = Float.parseFloat(context.getResources().getString(R.string.player_starting_acceleration));
+                MIN_VEL = Float.parseFloat(context.getResources().getString(R.string.player_min_velocity));
+                MAX_VEL = Float.parseFloat(context.getResources().getString(R.string.player_max_velocity));
+                GRAVITY = Float.parseFloat(context.getResources().getString(R.string.gravity));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -44,8 +66,7 @@ public class Player extends BitmapEntity {
         _velX = Utils.clamp(_velX, MIN_VEL, MAX_VEL);
         _velY = Utils.clamp(_velY, -MAX_VEL, MAX_VEL/2);
         _y += _velY;
-        _x = Utils.wrap(_x, -_width, Game.STAGE_WIDTH);
-        _y = Utils.clamp(_y, 0, Game.STAGE_HEIGHT-_height);
+        _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT-_height);
         _game._playerSpeed = _velX;
         recovering();
 

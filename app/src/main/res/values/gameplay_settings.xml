@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="player_height">100</integer>
+    <!--Game settings-->
+    <integer name="stage_width">1280</integer>
+    <integer name="stage_height">720</integer>
+    <integer name="text_size">48</integer>
+
+    <!--Player settings-->
+    <integer name="player_height">80</integer>
     <integer name="player_health">3</integer>
     <integer name="player_starting_position">40</integer>
-    <string name="player_starting_acceleration">1.1</string>
+    <string name="player_starting_acceleration">1.08</string>
+    <string name="player_min_velocity">4</string>
+    <string name="player_max_velocity">15</string>
+    <string name="gravity">1.1</string>
+    <integer name="recovery_frames">64</integer>
+
+    <!--Enemy settings-->
+    <integer name="enemy_count">6</integer>
+    <integer name="enemy_height">70</integer>
+    <integer name="enemy_sprite_count">3</integer>
+
+    <!--Star settings-->
+    <integer name="star_count">70</integer>
+    <integer name="star_color1">0xFFFFDDFF</integer>
+    <integer name="star_color2">0xFFFFFFFF</integer>
+    <integer name="star_color3">0xFFFFFF99</integer>
+    <integer name="star_max_size">5</integer>
+    <integer name="star_min_size">1</integer>
+    <integer name="star_velocity">4</integer>
+
+    <!--Meteor settings-->
+    <integer name="meteor_count">6</integer>
+    <integer name="meteor_height">40</integer>
+    <integer name="meteor_velocity">4</integer>
 </resources>
