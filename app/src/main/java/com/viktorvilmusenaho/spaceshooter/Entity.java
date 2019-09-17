@@ -1,5 +1,4 @@
 package com.viktorvilmusenaho.spaceshooter;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 

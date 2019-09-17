@@ -5,7 +5,7 @@ import android.content.res.Resources;
 
 import static java.lang.Math.sin;
 
-public class Enemy extends BitmapEntity {
+class Enemy extends BitmapEntity {
 
     private static int ENEMY_HEIGHT = 80;
     private static int ENEMY_SPAWN_OFFSET = _game.STAGE_WIDTH;
@@ -53,6 +53,7 @@ public class Enemy extends BitmapEntity {
     void update() {
         _velX = -(_game._playerSpeed);
         _x += _velX;
+
         _patternCounter += 0.01f;
         _y += (float) sin(_patternCounter);
 

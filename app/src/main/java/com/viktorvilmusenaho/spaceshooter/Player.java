@@ -2,9 +2,8 @@ package com.viktorvilmusenaho.spaceshooter;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 
-public class Player extends BitmapEntity {
+class Player extends BitmapEntity {
 
     private static int PLAYER_HEIGHT = 100;
     private static int PLAYER_HEALTH = 3;
@@ -17,7 +16,6 @@ public class Player extends BitmapEntity {
     private static float DRAG = 0.97f;
     private static int RECOVERY_FRAMES = 64;
 
-    private Bitmap _bitmap = null;
     int _health = PLAYER_HEALTH;
     int _graceCounter = 0;
 
@@ -39,6 +37,7 @@ public class Player extends BitmapEntity {
                 MIN_VEL = Float.parseFloat(context.getResources().getString(R.string.player_min_velocity));
                 MAX_VEL = Float.parseFloat(context.getResources().getString(R.string.player_max_velocity));
                 GRAVITY = Float.parseFloat(context.getResources().getString(R.string.gravity));
+                DRAG = Float.parseFloat(context.getResources().getString(R.string.drag));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -68,8 +67,7 @@ public class Player extends BitmapEntity {
         _y += _velY;
         _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT-_height);
         _game._playerSpeed = _velX;
-        recovering();
-
+        IsRecovering();
     }
 
     @Override
@@ -78,13 +76,14 @@ public class Player extends BitmapEntity {
             _graceCounter = RECOVERY_FRAMES;
             _health--;
         } else {
-            recovering();
+            IsRecovering();
         }
     }
 
-    void recovering(){
+    private void IsRecovering(){
         if (_graceCounter > 0){
             _graceCounter--;
         }
     }
+
 }

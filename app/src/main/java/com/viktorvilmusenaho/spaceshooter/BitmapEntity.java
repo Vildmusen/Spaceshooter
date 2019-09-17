@@ -5,14 +5,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public abstract class BitmapEntity extends Entity {
+abstract class BitmapEntity extends Entity {
 
-    protected Bitmap _bitmap = null;
+    private Bitmap _bitmap = null;
 
     BitmapEntity() {
     }
 
-    protected void loadBitmap(int resID, int height) {
+    void loadBitmap(int resID, int height) {
         destroy();
         Bitmap temp = BitmapFactory.decodeResource(
                 _game.getContext().getResources(),

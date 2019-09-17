@@ -13,4 +13,9 @@
     <string name="restart_message">(Tap screen to restart)</string>
     <string name="health_text">Health: </string>
     <string name="distance_text">Distance: </string>
+
+    <!--Shoot Button-->
+    <integer name="shoot_button_width">70</integer>
+    <integer name="shoot_button_height">70</integer>
+    <integer name="shoot_button_edge_offset">50</integer>
 </resources>

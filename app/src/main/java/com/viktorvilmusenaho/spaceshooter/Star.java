@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class Star extends BitmapEntity {
+class Star extends BitmapEntity {
 
     private static int COLOR1 = 0xFFFF66FF;
     private static int COLOR2 = 0xFFFFFFFF;

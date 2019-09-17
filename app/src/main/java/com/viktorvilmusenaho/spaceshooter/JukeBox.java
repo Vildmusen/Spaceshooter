@@ -8,13 +8,16 @@ import android.media.SoundPool;
 
 import java.io.IOException;
 
-public class JukeBox {
+class JukeBox {
 
-    SoundPool _soundPool = null;
     private static final int MAX_STREAMS = 3;
     static int CRASH = 0;
     static int GAME_START = 0;
     static int GAME_OVER = 0;
+    static int PLAYER_SHOOT = 0;
+    static int SHOT_COLLISION = 0;
+
+    private SoundPool _soundPool;
 
     JukeBox(final Context context) {
         AudioAttributes attr = new AudioAttributes.Builder()
@@ -32,12 +35,14 @@ public class JukeBox {
         try {
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
-            descriptor = assetManager.openFd("crash2.wav");
+            descriptor = assetManager.openFd("crash.wav");
             CRASH = _soundPool.load(descriptor, 1);
             descriptor = assetManager.openFd("game_over.wav");
             GAME_OVER = _soundPool.load(descriptor, 1);
             descriptor = assetManager.openFd("game_start.ogg");
             GAME_START = _soundPool.load(descriptor, 1);
+            descriptor = assetManager.openFd("laser_pew.wav");
+            PLAYER_SHOOT = _soundPool.load(descriptor, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
