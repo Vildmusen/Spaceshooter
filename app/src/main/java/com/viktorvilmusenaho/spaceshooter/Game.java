@@ -22,6 +22,7 @@ public class Game extends SurfaceView implements Runnable {
     final int STAR_COUNT = getResources().getInteger(R.integer.star_count);
     final int METEOR_COUNT = getResources().getInteger(R.integer.meteor_count);
     final int ENEMY_COUNT = getResources().getInteger(R.integer.enemy_count);
+    final int POWER_UP_COUNT = getContext().getResources().getInteger(R.integer.power_up_count);
     final int MAX_SHOTS_ONSCREEN = getResources().getInteger(R.integer.projectile_max_count);
     final int SHOT_TOOLTIP_SIZE = 40;
     final int SHOT_TOOLTIP_OFFSET = 30;
@@ -29,7 +30,7 @@ public class Game extends SurfaceView implements Runnable {
 
     private Thread _gameThread = null;
     private volatile boolean _isRunning = false;
-    private SurfaceHolder _holder;
+    private SurfaceHolder _holder = null;
     private Paint _paint = new Paint();
     private Canvas _canvas = null;
 
@@ -38,8 +39,9 @@ public class Game extends SurfaceView implements Runnable {
     private ArrayList<Entity> _projectileEntities = new ArrayList<>();
     private Player _player;
     Random _rng = new Random();
-    UI _ui;
-    private JukeBox _jukebox;
+    UI _ui = null;
+    private JukeBox _jukebox = null;
+    private Context _context = null;
 
     volatile boolean _isBoosting = false;
     float _playerSpeed = 0f;
@@ -48,6 +50,7 @@ public class Game extends SurfaceView implements Runnable {
 
     public Game(Context context) {
         super(context);
+        _context = context;
         Entity._game = this;
         _ui = new UI(this, context);
         _holder = getHolder();
@@ -59,15 +62,18 @@ public class Game extends SurfaceView implements Runnable {
 
     private void populateEntities() {
         for (int i = 0; i < STAR_COUNT; i++) {
-            _backgroundEntities.add(new Star(getContext()));
+            _backgroundEntities.add(new Star(_context));
         }
         for (int i = 0; i < ENEMY_COUNT; i++) {
-            _collidableEntities.add(new Enemy(getContext()));
+            _collidableEntities.add(new Enemy(_context));
         }
         for (int i = 0; i < METEOR_COUNT; i++) {
-            _collidableEntities.add(new EnemyMeteor(getContext()));
+            _collidableEntities.add(new EnemyMeteor(_context));
         }
-        _player = new Player(getContext());
+        for (int i = 0; i < POWER_UP_COUNT; i++) {
+            _collidableEntities.add(new PowerUp(_context));
+        }
+        _player = new Player(_context);
     }
 
     private void restart() {
@@ -177,7 +183,6 @@ public class Game extends SurfaceView implements Runnable {
         for (Entity e : _projectileEntities) {
             e.render(_canvas, _paint);
         }
-
         if (_player._graceCounter % 2 != 1) { // "blink" every other frame during players grace period
             _player.render(_canvas, _paint);
         }
@@ -276,7 +281,7 @@ public class Game extends SurfaceView implements Runnable {
     private void checkPress(float x, float y){
         if (_ui.shootButtonHitBox(x, y, STAGE_WIDTH, STAGE_HEIGHT)) {
             if (_projectileEntities.size() + 1 < MAX_SHOTS_ONSCREEN) {
-                _projectileEntities.add(new PlayerProjectile(getContext(), _player._x, _player._y, _player._width, _player._height));
+                _projectileEntities.add(new PlayerProjectile(_context, _player._x, _player._y, _player._width, _player._height));
                 _jukebox.play(JukeBox.PLAYER_SHOOT);
             }
         } else {

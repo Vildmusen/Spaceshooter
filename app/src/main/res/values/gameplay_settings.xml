@@ -41,4 +41,9 @@
     <integer name="meteor_count">4</integer>
     <integer name="meteor_height">40</integer>
     <integer name="meteor_velocity">4</integer>
+
+    <!--Power Up settings-->
+    <integer name="power_up_count">3</integer>
+    <integer name="power_up_size">15</integer>
+    <integer name="power_up_velocity">3</integer>
 </resources>

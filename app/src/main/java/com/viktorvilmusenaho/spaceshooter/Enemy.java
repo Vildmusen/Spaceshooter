@@ -34,7 +34,7 @@ class Enemy extends BitmapEntity {
     private int randomizeSprite(){
         switch (_game._rng.nextInt(ENEMY_SPRITE_COUNT)) {
             case 0:
-                return R.drawable.spaceship1_2;
+                return R.drawable.spaceship1_2; //TODO sprite names as resource
             case 1:
                 return R.drawable.spaceship2_2;
             case 2:
