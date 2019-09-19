@@ -8,9 +8,9 @@
 
     <!--Player settings-->
     <integer name="player_height">80</integer>
-    <integer name="player_health">3</integer>
+    <integer name="player_health">1</integer>
     <integer name="player_starting_position">40</integer>
-    <integer name="player_left_margin">120</integer>
+    <integer name="player_left_margin">180</integer>
     <string name="player_starting_acceleration">1.08</string>
     <string name="player_min_velocity">4</string>
     <string name="player_max_velocity">15</string>
@@ -18,10 +18,10 @@
     <integer name="recovery_frames">128</integer>
 
     <!--Player Projectile settings-->
-    <integer name="projectile_max_count">6</integer>
+    <integer name="projectile_max_count">5</integer>
     <integer name="projectile_color">0xFFFF0000</integer>
-    <integer name="projectile_width">18</integer>
-    <integer name="projectile_height">4</integer>
+    <integer name="projectile_width">25</integer>
+    <integer name="projectile_height">6</integer>
     <integer name="projectile_velocity">3</integer>
 
     <!--Enemy settings-->
@@ -39,12 +39,12 @@
     <integer name="star_velocity">4</integer>
 
     <!--Meteor settings-->
-    <integer name="meteor_count">4</integer>
+    <integer name="meteor_count">2</integer>
     <integer name="meteor_height">40</integer>
     <integer name="meteor_velocity">4</integer>
 
     <!--Power Up settings-->
-    <integer name="power_up_count">3</integer>
-    <integer name="power_up_size">15</integer>
-    <integer name="power_up_velocity">3</integer>
+    <integer name="power_up_count">1</integer>
+    <integer name="power_up_size">80</integer>
+    <integer name="power_up_velocity">8</integer>
 </resources>

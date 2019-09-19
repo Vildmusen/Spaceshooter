@@ -4,12 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 
+import static com.viktorvilmusenaho.spaceshooter.Entity._game;
+
 class UI {
 
-//    public static final String TAG = "UI";
+    public static final String TAG = "UI";
     static final String PREFS = "com.viktorvilmusenaho.spaceshooter";
     static final String LONGEST_DIST = "longest_distance";
     static String GAME_OVER = "GAME OVER!";
@@ -19,6 +24,9 @@ class UI {
     private static int SHOOT_BUTTON_WIDTH = 50;
     private static int SHOOT_BUTTON_HEIGHT = 50;
     private static int SHOOT_BUTTON_EDGE_OFFSET = 35;
+    private float TEXT_SIZE = 48f;
+    final int SHOT_TOOLTIP_SIZE = 40;
+    final int SHOT_TOOLTIP_OFFSET = 30;
 
     private SharedPreferences.Editor _editor;
     private int _maxDistanceTraveled;
@@ -48,9 +56,43 @@ class UI {
             SHOOT_BUTTON_WIDTH = context.getResources().getInteger(R.integer.shoot_button_width);
             SHOOT_BUTTON_HEIGHT = context.getResources().getInteger(R.integer.shoot_button_height);
             SHOOT_BUTTON_EDGE_OFFSET = context.getResources().getInteger(R.integer.shoot_button_edge_offset);
+            TEXT_SIZE = (float) context.getResources().getInteger(R.integer.text_size);
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void render(Canvas canvas, Paint paint) {
+        paint.setColor(Color.WHITE);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setTextSize(TEXT_SIZE);
+        if (!_game._gameOver) {
+            renderHUD(canvas, paint);
+        } else {
+            renderGameOver(canvas, paint);
+        }
+    }
+
+    public void renderHUD(Canvas canvas, Paint paint) {
+        canvas.drawText(String.format("%s%d", HEALTH, _game._player._health), 10, TEXT_SIZE, paint);
+        canvas.drawText(String.format("%s%d", DISTANCE, _game._distanceTraveled), 10, TEXT_SIZE * 2, paint);
+        paint.setColor(Color.RED);
+        canvas.drawRect(_shootButton, paint);
+        for (int i = 0; i < _game.MAX_SHOTS_ONSCREEN -  _game.shotsOnScreen(); i++) {
+            canvas.drawRect(new Rect(
+                            (_game.STAGE_WIDTH - SHOT_TOOLTIP_SIZE + SHOT_TOOLTIP_OFFSET) - (i * SHOT_TOOLTIP_OFFSET),
+                            SHOT_TOOLTIP_SIZE,
+                            (_game.STAGE_WIDTH - SHOT_TOOLTIP_OFFSET) - (i * SHOT_TOOLTIP_OFFSET),
+                            SHOT_TOOLTIP_OFFSET),
+                    paint);
+        }
+    }
+
+    private void renderGameOver(Canvas canvas, Paint paint) {
+        final float centerY = _game.STAGE_HEIGHT / 2;
+        canvas.drawText(GAME_OVER, _game.STAGE_WIDTH / 2, centerY, paint);
+        canvas.drawText(RESTART_MESSAGE, _game.STAGE_WIDTH / 2, centerY + TEXT_SIZE, paint);
     }
 
     boolean shootButtonHitBox(float x, float y, float stage_width, float stage_height) {
@@ -59,14 +101,14 @@ class UI {
         return (x < stage_width - (SHOOT_BUTTON_EDGE_OFFSET) &&
                 x > stage_width - (SHOOT_BUTTON_WIDTH + SHOOT_BUTTON_EDGE_OFFSET) &&
                 y < stage_height - SHOOT_BUTTON_EDGE_OFFSET &&
-                y > stage_height- (SHOOT_BUTTON_HEIGHT + SHOOT_BUTTON_EDGE_OFFSET));
+                y > stage_height - (SHOOT_BUTTON_HEIGHT + SHOOT_BUTTON_EDGE_OFFSET));
     }
 
-    private float convertToStageWidth(float x, float width){
+    private float convertToStageWidth(float x, float width) {
         return width * (x / _metrics.widthPixels);
     }
 
-    private float convertToStageHeight(float y, float height){
+    private float convertToStageHeight(float y, float height) {
         return height * (y / _metrics.heightPixels);
     }
 

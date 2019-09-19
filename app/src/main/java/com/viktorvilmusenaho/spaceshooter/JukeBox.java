@@ -16,6 +16,7 @@ class JukeBox {
     static int GAME_OVER = 0;
     static int PLAYER_SHOOT = 0;
     static int SHOT_COLLISION = 0;
+    static int POWER_UP = 0;
 
     private SoundPool _soundPool;
 
@@ -43,6 +44,8 @@ class JukeBox {
             GAME_START = _soundPool.load(descriptor, 1);
             descriptor = assetManager.openFd("laser_pew.wav");
             PLAYER_SHOOT = _soundPool.load(descriptor, 1);
+            descriptor = assetManager.openFd("game_start.wav");
+            POWER_UP = _soundPool.load(descriptor, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }

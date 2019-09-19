@@ -5,7 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.sax.EndTextElementListener;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -24,9 +24,6 @@ public class Game extends SurfaceView implements Runnable {
     final int ENEMY_COUNT = getResources().getInteger(R.integer.enemy_count);
     final int POWER_UP_COUNT = getContext().getResources().getInteger(R.integer.power_up_count);
     final int MAX_SHOTS_ONSCREEN = getResources().getInteger(R.integer.projectile_max_count);
-    final int SHOT_TOOLTIP_SIZE = 40;
-    final int SHOT_TOOLTIP_OFFSET = 30;
-    final float TEXT_SIZE = (float) getResources().getInteger(R.integer.text_size);
 
     private Thread _gameThread = null;
     private volatile boolean _isRunning = false;
@@ -34,10 +31,9 @@ public class Game extends SurfaceView implements Runnable {
     private Paint _paint = new Paint();
     private Canvas _canvas = null;
 
-    private ArrayList<Entity> _collidableEntities = new ArrayList<>();
     private ArrayList<Entity> _backgroundEntities = new ArrayList<>();
-    private ArrayList<Entity> _projectileEntities = new ArrayList<>();
-    private Player _player;
+    public ArrayList<Entity> _collidableEntities = new ArrayList<>();
+    public Player _player;
     Random _rng = new Random();
     UI _ui = null;
     private JukeBox _jukebox = null;
@@ -46,7 +42,7 @@ public class Game extends SurfaceView implements Runnable {
     volatile boolean _isBoosting = false;
     float _playerSpeed = 0f;
     int _distanceTraveled = 0;
-    private boolean _gameOver = false;
+    public boolean _gameOver = false;
 
     public Game(Context context) {
         super(context);
@@ -61,6 +57,7 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private void populateEntities() {
+        _player = new Player(_context);
         for (int i = 0; i < STAR_COUNT; i++) {
             _backgroundEntities.add(new Star(_context));
         }
@@ -70,20 +67,18 @@ public class Game extends SurfaceView implements Runnable {
         for (int i = 0; i < METEOR_COUNT; i++) {
             _collidableEntities.add(new EnemyMeteor(_context));
         }
-        for (int i = 0; i < POWER_UP_COUNT; i++) {
-//            _collidableEntities.add(new PowerUp(_context));
+        for (int i = 0; i < MAX_SHOTS_ONSCREEN; i++) {
+            _collidableEntities.add(new PlayerProjectile(_context, _player._width, _player._height));
         }
-        _player = new Player(_context);
+        for (int i = 0; i < POWER_UP_COUNT; i++) {
+            _collidableEntities.add(new PowerUp(_context));
+        }
     }
 
     private void restart() {
-        for (Entity e : _backgroundEntities) {
-            e.respawn();
-        }
         for (Entity e : _collidableEntities) {
             e.respawn();
         }
-        _projectileEntities = new ArrayList<>();
         _player.respawn();
         _distanceTraveled = 0;
         _gameOver = false;
@@ -111,27 +106,13 @@ public class Game extends SurfaceView implements Runnable {
             e.update();
         }
 
-        int toRemove = -1;
-        for (int i = 0; i < _projectileEntities.size(); i++) {
-            PlayerProjectile shot = (PlayerProjectile) _projectileEntities.get(i);
-            if (shot.isOnScreen()) {
-                shot.update();
-            } else {
-                toRemove = i;
-                break;
-            }
-        }
-        if (toRemove != -1) {
-            _projectileEntities.remove(toRemove);
-        }
-
         _distanceTraveled += _playerSpeed;
         checkCollisions();
         checkGameOver();
     }
 
     private void checkGameOver() {
-        if (_player._health < 0) {
+        if (_player._health <= 0) {
             _gameOver = true;
             _ui.saveHighScore(_distanceTraveled);
             _jukebox.play(JukeBox.GAME_OVER);
@@ -139,33 +120,65 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private void checkCollisions() {
-        Entity temp;
+        Entity temp = null;
         for (int i = 0; i < _collidableEntities.size(); i++) {
             temp = _collidableEntities.get(i);
-            checkShotsColliding(temp);
-            checkPlayerColliding(temp);
+            checkPlayerCollisions(temp);
+            checkAllCollisions(temp);
         }
     }
 
-    private void checkPlayerColliding(Entity enemy) {
-        if (_player.isColliding(enemy) && _player._graceCounter == 0) {
-            _player.onCollision(enemy);
-            enemy.onCollision(_player);
-            _jukebox.play(JukeBox.CRASH);
-        }
-    }
-
-    private void checkShotsColliding(Entity enemy) {
-        PlayerProjectile shot;
-        for (int i = 0; i < _projectileEntities.size(); i++) {
-            shot = (PlayerProjectile) _projectileEntities.get(i);
-            if (shot.isColliding(enemy)) {
-                enemy.onCollision(shot);
-                shot.onCollision(enemy);
-                _projectileEntities.remove(shot);
-                _jukebox.play(JukeBox.CRASH);
+    private void checkPlayerCollisions(Entity e) {
+        if (_player.isColliding(e)) {
+            if (e instanceof PlayerProjectile) {
+                return;
+            } else if (e instanceof PowerUp) {
+                collision(_player, e);
+            } else if ((e instanceof Enemy || e instanceof EnemyMeteor) && _player._graceCounter == 0) {
+                collision(_player, e);
             }
         }
+    }
+
+    private void checkAllCollisions(Entity e) {
+        for (Entity temp : _collidableEntities) {
+            if (temp != e && temp.isColliding(e)) {
+                if (e instanceof PlayerProjectile && (temp instanceof Enemy || temp instanceof EnemyMeteor || temp instanceof PowerUp)) {
+                    collision(temp, e);
+                } else if (e instanceof Enemy && temp instanceof PlayerProjectile) {
+                    collision(temp, e);
+                } else if (e instanceof EnemyMeteor && temp instanceof PlayerProjectile) {
+                    collision(temp, e);
+                } else if (e instanceof PowerUp && temp instanceof PlayerProjectile) {
+                    collision(temp, e);
+                }
+
+            }
+        }
+    }
+
+    private void collision(Entity a, Entity b) {
+        a.onCollision(b);
+        b.onCollision(a);
+        _jukebox.play(JukeBox.CRASH);
+    }
+
+    public void killAllEnemies() {
+        for (Entity e : _collidableEntities) {
+            if (!(e instanceof PlayerProjectile)) {
+                e.respawn();
+            }
+        }
+    }
+
+    public int shotsOnScreen(){
+        int count = 0;
+        for (Entity e : _collidableEntities) {
+            if (e instanceof PlayerProjectile && ((PlayerProjectile) e)._isActive) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void render() {
@@ -181,39 +194,12 @@ public class Game extends SurfaceView implements Runnable {
         for (Entity e : _collidableEntities) {
             e.render(_canvas, _paint);
         }
-        for (Entity e : _projectileEntities) {
-            e.render(_canvas, _paint);
-        }
         if (_player._graceCounter % 2 != 1) { // "blink" every other frame during players grace period
             _player.render(_canvas, _paint);
         }
-        renderHUD(_canvas, _paint);
-        _holder.unlockCanvasAndPost(_canvas);
-    }
 
-    @SuppressLint("DefaultLocale")
-    private void renderHUD(final Canvas canvas, final Paint paint) {
-        paint.setColor(Color.WHITE);
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setTextSize(TEXT_SIZE);
-        if (!_gameOver) {
-            canvas.drawText(String.format("%s%d", UI.HEALTH, _player._health), 10, TEXT_SIZE, paint);
-            canvas.drawText(String.format("%s%d", UI.DISTANCE, _distanceTraveled), 10, TEXT_SIZE * 2, paint);
-            paint.setColor(Color.RED);
-            canvas.drawRect(_ui._shootButton, paint);
-            for(int i = 0; i < MAX_SHOTS_ONSCREEN - _projectileEntities.size() - 1; i++){
-                canvas.drawRect(new Rect(
-                        (STAGE_WIDTH - SHOT_TOOLTIP_SIZE + SHOT_TOOLTIP_OFFSET) - (i*SHOT_TOOLTIP_OFFSET),
-                        SHOT_TOOLTIP_SIZE,
-                        (STAGE_WIDTH - SHOT_TOOLTIP_OFFSET) - (i*SHOT_TOOLTIP_OFFSET),
-                        SHOT_TOOLTIP_OFFSET),
-                        paint);
-            }
-        } else {
-            final float centerY = STAGE_HEIGHT / 2;
-            canvas.drawText(UI.GAME_OVER, STAGE_WIDTH / 2, centerY, paint);
-            canvas.drawText(UI.RESTART_MESSAGE, STAGE_WIDTH / 2, centerY + TEXT_SIZE, paint);
-        }
+        _ui.render(_canvas, _paint);
+        _holder.unlockCanvasAndPost(_canvas);
     }
 
     private boolean acquireAndLockCanvas() {
@@ -251,9 +237,6 @@ public class Game extends SurfaceView implements Runnable {
         for (Entity e : _collidableEntities) {
             e.destroy();
         }
-        for (Entity e : _projectileEntities){
-            e.destroy();
-        }
         _jukebox.destroy();
         Entity._game = null;
     }
@@ -279,14 +262,28 @@ public class Game extends SurfaceView implements Runnable {
         return true;
     }
 
-    private void checkPress(float x, float y){
+    private void checkPress(float x, float y) {
         if (_ui.shootButtonHitBox(x, y, STAGE_WIDTH, STAGE_HEIGHT)) {
-            if (_projectileEntities.size() + 1 < MAX_SHOTS_ONSCREEN) {
-                _projectileEntities.add(new PlayerProjectile(_context, _player._x, _player._y, _player._width, _player._height));
+            PlayerProjectile shot = findInactiveProjectile();
+            if (shot != null) {
+                shot._isActive = true;
+                shot.spawn(_player._x, _player._y);
                 _jukebox.play(JukeBox.PLAYER_SHOOT);
             }
         } else {
             _isBoosting = true;
         }
+    }
+
+    private PlayerProjectile findInactiveProjectile() {
+        for (Entity e : _collidableEntities) {
+            if (e instanceof PlayerProjectile) {
+                PlayerProjectile temp = (PlayerProjectile) e;
+                if (!temp._isActive) {
+                    return temp;
+                }
+            }
+        }
+        return null;
     }
 }

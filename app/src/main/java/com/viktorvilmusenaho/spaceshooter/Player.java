@@ -20,21 +20,21 @@ class Player extends BitmapEntity {
     int _health = PLAYER_HEALTH;
     int _graceCounter = 0;
 
-    Player(Context context){
+    Player(Context context) {
         super();
         loadResources(context);
         loadBitmap(R.drawable.angler_ship, PLAYER_HEIGHT);
         respawn();
     }
 
-    private void loadResources(Context context){
-        try{
+    private void loadResources(Context context) {
+        try {
             PLAYER_HEIGHT = context.getResources().getInteger(R.integer.player_height);
             PLAYER_HEALTH = context.getResources().getInteger(R.integer.player_health);
             STARTING_POSITION = context.getResources().getInteger(R.integer.player_starting_position);
             PLAYER_LEFT_MARGIN = context.getResources().getInteger(R.integer.player_left_margin);
             RECOVERY_FRAMES = context.getResources().getInteger(R.integer.recovery_frames);
-            try{
+            try {
                 ACC = Float.parseFloat(context.getResources().getString(R.string.player_starting_acceleration));
                 MIN_VEL = Float.parseFloat(context.getResources().getString(R.string.player_min_velocity));
                 MAX_VEL = Float.parseFloat(context.getResources().getString(R.string.player_max_velocity));
@@ -60,31 +60,33 @@ class Player extends BitmapEntity {
     void update() {
         _velX *= DRAG;
         _velY += GRAVITY;
-        if(_game._isBoosting){
+        if (_game._isBoosting) {
             _velX *= ACC;
             _velY += LIFT;
         }
         _velX = Utils.clamp(_velX, MIN_VEL, MAX_VEL);
-        _velY = Utils.clamp(_velY, -MAX_VEL, MAX_VEL/2);
+        _velY = Utils.clamp(_velY, -MAX_VEL, MAX_VEL / 2);
         _x = PLAYER_LEFT_MARGIN;
         _y += _velY;
-        _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT-_height);
+        _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT - _height);
         _game._playerSpeed = _velX;
         IsRecovering();
     }
 
     @Override
     void onCollision(Entity that) {
-        if(_graceCounter == 0){
-            _graceCounter = RECOVERY_FRAMES;
-            _health--;
-        } else {
-            IsRecovering();
+        if(!(that instanceof PowerUp)){
+            if (_graceCounter == 0) {
+                _graceCounter = RECOVERY_FRAMES;
+                _health--;
+            } else {
+                IsRecovering();
+            }
         }
     }
 
-    private void IsRecovering(){
-        if (_graceCounter > 0){
+    private void IsRecovering() {
+        if (_graceCounter > 0) {
             _graceCounter--;
         }
     }

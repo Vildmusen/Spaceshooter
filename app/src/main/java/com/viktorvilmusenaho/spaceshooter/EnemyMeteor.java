@@ -18,8 +18,8 @@ class EnemyMeteor extends BitmapEntity {
         respawn();
     }
 
-    private void loadResources(Context context){
-        try{
+    private void loadResources(Context context) {
+        try {
             METEOR_HEIGHT = context.getResources().getInteger(R.integer.meteor_height);
             METEOR_VELOCITY = (float) context.getResources().getInteger(R.integer.meteor_velocity);
         } catch (Resources.NotFoundException e) {

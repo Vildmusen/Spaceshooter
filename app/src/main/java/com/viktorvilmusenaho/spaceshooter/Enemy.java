@@ -2,11 +2,15 @@ package com.viktorvilmusenaho.spaceshooter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.util.Log;
 
 import static java.lang.Math.sin;
 
 class Enemy extends BitmapEntity {
 
+    private static final String TAG = "Enemy";
     private static int ENEMY_HEIGHT = 80;
     private static int ENEMY_SPAWN_OFFSET = _game.STAGE_WIDTH;
     private static int ENEMY_SPRITE_COUNT = 3;
@@ -34,13 +38,19 @@ class Enemy extends BitmapEntity {
     private int randomizeSprite() {
         switch (_game._rng.nextInt(ENEMY_SPRITE_COUNT)) {
             case 0:
-                return R.drawable.spaceship1_2; //TODO sprite names as resource
+                return R.drawable.spaceship1_2; //TODO sprite names as resource?
             case 1:
                 return R.drawable.spaceship2_2;
             case 2:
                 return R.drawable.spaceship3_2;
         }
         return R.drawable.spaceship1_2;
+    }
+
+    @Override
+    void render(Canvas canvas, Paint paint) {
+        super.render(canvas, paint);
+        Log.d(TAG, "im rendering at " + _x);
     }
 
     @Override

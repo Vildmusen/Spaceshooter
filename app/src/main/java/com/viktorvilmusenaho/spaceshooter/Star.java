@@ -20,7 +20,7 @@ class Star extends Entity {
     Star(Context context) {
         loadResources(context);
         randomizeColor();
-        _x = _game._rng.nextInt(_game.STAGE_WIDTH);
+        _x = _game._rng.nextInt(_game.STAGE_WIDTH * 2);
         _y = _game._rng.nextInt(_game.STAGE_HEIGHT);
         _radius = _game._rng.nextInt(STAR_MAX_SIZE) + STAR_MIN_SIZE;
         _width = _radius * 2;
@@ -28,8 +28,8 @@ class Star extends Entity {
         modifySpeed(STAR_VEL);
     }
 
-    private void loadResources(Context context){
-        try{
+    private void loadResources(Context context) {
+        try {
             COLOR1 = context.getResources().getInteger(R.integer.star_color1);
             COLOR2 = context.getResources().getInteger(R.integer.star_color2);
             COLOR3 = context.getResources().getInteger(R.integer.star_color3);
@@ -41,9 +41,15 @@ class Star extends Entity {
         }
     }
 
-    private void randomizeColor(){
+    @Override
+    public void respawn() {
+        _x = _game.STAGE_WIDTH +_game._rng.nextInt(_game.STAGE_WIDTH);
+        _y = _game._rng.nextInt(_game.STAGE_HEIGHT);
+    }
+
+    private void randomizeColor() {
         _randomColor = COLOR1;
-        switch(_game._rng.nextInt(3)){
+        switch (_game._rng.nextInt(3)) {
             case 0:
                 _randomColor = COLOR1;
                 break;
@@ -60,7 +66,9 @@ class Star extends Entity {
     void update() {
         modifySpeed(_game._playerSpeed);
         _x += _velX;
-        _x = Utils.wrap(_x, 0 - _width, _game.STAGE_WIDTH);
+        if (_x + _width < 0) {
+            respawn();
+        }
     }
 
     @Override
@@ -69,8 +77,8 @@ class Star extends Entity {
         canvas.drawCircle(_x + _radius, _y + _radius, _radius, paint);
     }
 
-    private void modifySpeed(float speed){
-        _velX= -(speed * 1 + (_radius/5));
+    private void modifySpeed(float speed) {
+        _velX = -(speed * 1 + (_radius / 5));
     }
 
 }
