@@ -24,7 +24,8 @@ class UI {
     private static int SHOOT_BUTTON_WIDTH = 50;
     private static int SHOOT_BUTTON_HEIGHT = 50;
     private static int SHOOT_BUTTON_EDGE_OFFSET = 35;
-    private float TEXT_SIZE = 48f;
+    private float TEXT_SIZE_SMALL = 48f;
+    private float TEXT_SIZE_BIG = 220f;
     final int SHOT_TOOLTIP_SIZE = 40;
     final int SHOT_TOOLTIP_OFFSET = 30;
 
@@ -56,7 +57,8 @@ class UI {
             SHOOT_BUTTON_WIDTH = context.getResources().getInteger(R.integer.shoot_button_width);
             SHOOT_BUTTON_HEIGHT = context.getResources().getInteger(R.integer.shoot_button_height);
             SHOOT_BUTTON_EDGE_OFFSET = context.getResources().getInteger(R.integer.shoot_button_edge_offset);
-            TEXT_SIZE = (float) context.getResources().getInteger(R.integer.text_size);
+            TEXT_SIZE_SMALL = (float) context.getResources().getInteger(R.integer.text_size_small);
+            TEXT_SIZE_BIG = (float) context.getResources().getInteger(R.integer.text_size_big);
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
@@ -64,19 +66,25 @@ class UI {
 
     @SuppressLint("DefaultLocale")
     public void render(Canvas canvas, Paint paint) {
-        paint.setColor(Color.WHITE);
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setTextSize(TEXT_SIZE);
+        paint.setTextAlign(Paint.Align.CENTER);
         if (!_game._gameOver) {
+            paint.setTextSize(TEXT_SIZE_BIG);
             renderHUD(canvas, paint);
         } else {
-            renderGameOver(canvas, paint);
+            paint.setTextSize(TEXT_SIZE_SMALL);
+            renderGameOverHUD(canvas, paint);
         }
     }
 
+    public void renderScore(Canvas canvas, Paint paint){
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(20);
+        final float centerY = _game.STAGE_HEIGHT / 2;
+        String text = String.format("%s", _game._distanceTraveled);
+        canvas.drawText(text, _game.STAGE_WIDTH / 2, centerY + (TEXT_SIZE_BIG / 2), paint);
+    }
+
     public void renderHUD(Canvas canvas, Paint paint) {
-        canvas.drawText(String.format("%s%d", HEALTH, _game._player._health), 10, TEXT_SIZE, paint);
-        canvas.drawText(String.format("%s%d", DISTANCE, _game._distanceTraveled), 10, TEXT_SIZE * 2, paint);
         paint.setColor(Color.RED);
         canvas.drawRect(_shootButton, paint);
         for (int i = 0; i < _game.MAX_SHOTS_ONSCREEN -  _game.shotsOnScreen(); i++) {
@@ -89,10 +97,11 @@ class UI {
         }
     }
 
-    private void renderGameOver(Canvas canvas, Paint paint) {
+    private void renderGameOverHUD(Canvas canvas, Paint paint) {
+        paint.setColor(Color.WHITE);
         final float centerY = _game.STAGE_HEIGHT / 2;
         canvas.drawText(GAME_OVER, _game.STAGE_WIDTH / 2, centerY, paint);
-        canvas.drawText(RESTART_MESSAGE, _game.STAGE_WIDTH / 2, centerY + TEXT_SIZE, paint);
+        canvas.drawText(RESTART_MESSAGE, _game.STAGE_WIDTH / 2, centerY + TEXT_SIZE_SMALL, paint);
     }
 
     boolean shootButtonHitBox(float x, float y, float stage_width, float stage_height) {

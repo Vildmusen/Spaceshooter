@@ -106,7 +106,7 @@ public class Game extends SurfaceView implements Runnable {
             e.update();
         }
 
-        _distanceTraveled += _playerSpeed;
+        _distanceTraveled++;
         checkCollisions();
         checkGameOver();
     }
@@ -187,6 +187,7 @@ public class Game extends SurfaceView implements Runnable {
         }
 
         _canvas.drawColor(Color.BLACK);
+        _ui.renderScore(_canvas, _paint);
 
         for (Entity e : _backgroundEntities) {
             e.render(_canvas, _paint);
