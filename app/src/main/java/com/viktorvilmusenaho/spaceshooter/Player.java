@@ -8,6 +8,7 @@ class Player extends BitmapEntity {
     private static int PLAYER_HEIGHT = 100;
     private static int PLAYER_HEALTH = 3;
     private static int STARTING_POSITION = 40;
+    private static int PLAYER_LEFT_MARGIN = 120;
     private static float ACC = 1.1f;
     private static float MIN_VEL = 1f;
     private static float MAX_VEL = 15f;
@@ -31,6 +32,7 @@ class Player extends BitmapEntity {
             PLAYER_HEIGHT = context.getResources().getInteger(R.integer.player_height);
             PLAYER_HEALTH = context.getResources().getInteger(R.integer.player_health);
             STARTING_POSITION = context.getResources().getInteger(R.integer.player_starting_position);
+            PLAYER_LEFT_MARGIN = context.getResources().getInteger(R.integer.player_left_margin);
             RECOVERY_FRAMES = context.getResources().getInteger(R.integer.recovery_frames);
             try{
                 ACC = Float.parseFloat(context.getResources().getString(R.string.player_starting_acceleration));
@@ -64,6 +66,7 @@ class Player extends BitmapEntity {
         }
         _velX = Utils.clamp(_velX, MIN_VEL, MAX_VEL);
         _velY = Utils.clamp(_velY, -MAX_VEL, MAX_VEL/2);
+        _x = PLAYER_LEFT_MARGIN;
         _y += _velY;
         _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT-_height);
         _game._playerSpeed = _velX;

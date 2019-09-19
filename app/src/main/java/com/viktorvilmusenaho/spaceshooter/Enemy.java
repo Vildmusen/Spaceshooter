@@ -22,7 +22,7 @@ class Enemy extends BitmapEntity {
         respawn();
     }
 
-    private void loadResources(Context context){
+    private void loadResources(Context context) {
         try {
             ENEMY_HEIGHT = context.getResources().getInteger(R.integer.enemy_height);
             ENEMY_SPRITE_COUNT = context.getResources().getInteger(R.integer.enemy_sprite_count);
@@ -31,7 +31,7 @@ class Enemy extends BitmapEntity {
         }
     }
 
-    private int randomizeSprite(){
+    private int randomizeSprite() {
         switch (_game._rng.nextInt(ENEMY_SPRITE_COUNT)) {
             case 0:
                 return R.drawable.spaceship1_2; //TODO sprite names as resource

@@ -10,6 +10,7 @@
     <integer name="player_height">80</integer>
     <integer name="player_health">3</integer>
     <integer name="player_starting_position">40</integer>
+    <integer name="player_left_margin">120</integer>
     <string name="player_starting_acceleration">1.08</string>
     <string name="player_min_velocity">4</string>
     <string name="player_max_velocity">15</string>

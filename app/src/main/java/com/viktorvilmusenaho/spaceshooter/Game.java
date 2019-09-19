@@ -71,7 +71,7 @@ public class Game extends SurfaceView implements Runnable {
             _collidableEntities.add(new EnemyMeteor(_context));
         }
         for (int i = 0; i < POWER_UP_COUNT; i++) {
-            _collidableEntities.add(new PowerUp(_context));
+//            _collidableEntities.add(new PowerUp(_context));
         }
         _player = new Player(_context);
     }
@@ -102,6 +102,7 @@ public class Game extends SurfaceView implements Runnable {
         if (_gameOver) {
             return;
         }
+
         _player.update();
         for (Entity e : _backgroundEntities) {
             e.update();
@@ -112,9 +113,9 @@ public class Game extends SurfaceView implements Runnable {
 
         int toRemove = -1;
         for (int i = 0; i < _projectileEntities.size(); i++) {
-            PlayerProjectile temp = (PlayerProjectile) _projectileEntities.get(i);
-            if (temp.isOnScreen()) {
-                temp.update();
+            PlayerProjectile shot = (PlayerProjectile) _projectileEntities.get(i);
+            if (shot.isOnScreen()) {
+                shot.update();
             } else {
                 toRemove = i;
                 break;
@@ -141,8 +142,8 @@ public class Game extends SurfaceView implements Runnable {
         Entity temp;
         for (int i = 0; i < _collidableEntities.size(); i++) {
             temp = _collidableEntities.get(i);
-            checkPlayerColliding(temp);
             checkShotsColliding(temp);
+            checkPlayerColliding(temp);
         }
     }
 
@@ -155,13 +156,13 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private void checkShotsColliding(Entity enemy) {
-        Entity temp;
+        PlayerProjectile shot;
         for (int i = 0; i < _projectileEntities.size(); i++) {
-            temp = _projectileEntities.get(i);
-            if (enemy.isColliding(temp)) {
-                enemy.onCollision(temp);
-                temp.onCollision(enemy);
-                _projectileEntities.remove(temp);
+            shot = (PlayerProjectile) _projectileEntities.get(i);
+            if (shot.isColliding(enemy)) {
+                enemy.onCollision(shot);
+                shot.onCollision(enemy);
+                _projectileEntities.remove(shot);
                 _jukebox.play(JukeBox.CRASH);
             }
         }

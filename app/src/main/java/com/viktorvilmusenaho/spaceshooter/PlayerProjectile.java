@@ -32,14 +32,14 @@ class PlayerProjectile extends Entity {
                 (int) (_x + _playerWidth),
                 (int) (_y + (_playerHeight / 2)),
                 (int) (_x + WIDTH + _playerWidth),
-                (int) (_y + HEIGHT + (_playerHeight /2)));
+                (int) (_y + HEIGHT + (_playerHeight / 2)));
     }
 
-    void despawn(){
+    void despawn() {
         _shot = null;
     }
 
-    boolean isOnScreen(){
+    boolean isOnScreen() {
         return _x < _game.STAGE_WIDTH - WIDTH;
     }
 
@@ -64,13 +64,13 @@ class PlayerProjectile extends Entity {
                     (int) (_x + _playerWidth),
                     (int) (_y + (_playerHeight / 2)),
                     (int) (_x + WIDTH + _playerWidth),
-                    (int) (_y + HEIGHT + (_playerHeight /2)));
+                    (int) (_y + HEIGHT + (_playerHeight / 2)));
         }
     }
 
     @Override
     void render(Canvas canvas, Paint paint) {
-        if(_shot != null){
+        if (_shot != null) {
             paint.setColor(COLOR);
             canvas.drawRect(_shot, paint);
         }
