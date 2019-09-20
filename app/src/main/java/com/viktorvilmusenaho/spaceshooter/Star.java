@@ -78,7 +78,7 @@ class Star extends Entity {
     }
 
     private void modifySpeed(float speed) {
-        _velX = -(speed * 1 + (_radius / 5));
+        _velX = -(speed * (0.5f + (_radius / 10)));
     }
 
 }

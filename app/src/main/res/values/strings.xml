@@ -2,11 +2,9 @@
     <!--Start screen strings-->
     <string name="app_name">Spaceshooter</string>
     <string name="start_game">Start Game!</string>
-    <string name="high_score_default_value">Longest Distance Traveled: 0km</string>
-
-    <!--Shared preferences information-->
-<!--    <string name="shared_preferences">com.viktorvilmusenaho.spaceshooter</string>-->
-<!--    <string name="longest_distance_preference">longest_distance</string>-->
+    <string name="high_score_default_value">Longest Distance Traveled: 0m</string>
+    <string name="high_score_text">Longest Distance Traveled: </string>
+    <string name="high_score_metric">m</string>
 
     <!--Game HUD strings-->
     <string name="game_over_message">GAME OVER!</string>

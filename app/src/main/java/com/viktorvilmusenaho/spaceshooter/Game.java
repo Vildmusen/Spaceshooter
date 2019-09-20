@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.net.JarURLConnection;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -37,7 +38,7 @@ public class Game extends SurfaceView implements Runnable {
     public Player _player;
     Random _rng = new Random();
     UI _ui = null;
-    private JukeBox _jukebox = null;
+    public JukeBox _jukebox = null;
     private Context _context = null;
 
     volatile boolean _isBoosting = false;
@@ -143,7 +144,9 @@ public class Game extends SurfaceView implements Runnable {
         if (_player.isColliding(e)) {
             if (e instanceof PowerUp) {
                 collision(_player, e);
-                _jukebox.play(JukeBox.PLAYER_SHOOT);
+                if (e instanceof PowerUpDestroy){
+                    _jukebox.play(JukeBox.PLAYER_SHOOT);
+                }
             } else if ((e instanceof Enemy || e instanceof EnemyMeteor) && _player._graceCounter == 0) {
                 collision(_player, e);
                 _jukebox.play(JukeBox.CRASH);
@@ -155,7 +158,9 @@ public class Game extends SurfaceView implements Runnable {
         for (PlayerProjectile shot : _projectileEntities) {
             if(shot._isActive && shot.isColliding(e)){
                 collision(shot, e);
-                _jukebox.play(JukeBox.CRASH);
+                if (!(e instanceof PowerUpShield)){
+                    _jukebox.play(JukeBox.CRASH);
+                }
             }
         }
     }

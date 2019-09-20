@@ -71,7 +71,9 @@ class Player extends BitmapEntity {
         _y += _velY;
         _y = Utils.clamp(_y, 0, _game.STAGE_HEIGHT - _height);
         _game._playerSpeed = _velX;
-        IsRecovering();
+        if (_graceCounter > 0) {
+            _graceCounter--;
+        }
     }
 
     @Override
@@ -83,23 +85,13 @@ class Player extends BitmapEntity {
                 _shield = null;
                 return;
             }
-            if (_graceCounter == 0) {
-                _graceCounter = RECOVERY_FRAMES;
-                _health--;
-            } else {
-                IsRecovering();
-            }
+            _graceCounter = RECOVERY_FRAMES;
+            _health--;
         }
     }
 
     public void setShield(PowerUpShield shield) {
         _shield = shield;
+        _game._jukebox.play(JukeBox.GAME_START);
     }
-
-    private void IsRecovering() {
-        if (_graceCounter > 0) {
-            _graceCounter--;
-        }
-    }
-
 }

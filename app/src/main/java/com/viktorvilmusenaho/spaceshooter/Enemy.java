@@ -67,8 +67,8 @@ class Enemy extends BitmapEntity {
 
     @Override
     void update() {
-        _velX = -(_game._playerSpeed * (DIFFICULTY_MULTIPLIER + (_patternCounter/1000)));
-        _x += _velX;
+        _velX = -(_game._playerSpeed);
+        _x += _velX - (DIFFICULTY_MULTIPLIER + (_patternCounter/1000));
 
         _patternCounter += 0.01f;
         _y += (float) sin(_patternCounter);

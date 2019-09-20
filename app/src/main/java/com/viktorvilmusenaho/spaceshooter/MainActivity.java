@@ -22,7 +22,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final TextView high_score = findViewById(R.id.high_score_txt);
         SharedPreferences prefs = getSharedPreferences(UI.PREFS, Context.MODE_PRIVATE);
         int longestDistance = prefs.getInt(UI.LONGEST_DIST, 0);
-        high_score.setText(String.format("Longest Distance Traveled: %skm", longestDistance));
+        high_score.setText(String.format("%s %d%s",
+                getResources().getString(R.string.high_score_text),
+                longestDistance,
+                getResources().getString(R.string.high_score_metric)));
     }
 
     @Override

@@ -16,7 +16,6 @@ class PlayerProjectile extends BitmapEntity {
     private static float PROJECTILE_VEL = 6f;
 
     public boolean _isActive = false;
-    private Rect _shot = null;
     private float _playerWidth;
     private float _playerHeight;
 
