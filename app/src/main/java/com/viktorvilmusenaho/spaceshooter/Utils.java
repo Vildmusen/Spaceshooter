@@ -1,23 +1,8 @@
 package com.viktorvilmusenaho.spaceshooter;
 
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 
 abstract class Utils {
-
-//    static Matrix _matrix = new Matrix();
-//
-//    public static Bitmap flipBitmap(final Bitmap src, final boolean horizontal){
-//        _matrix.reset();
-//        final int cx = src.getWidth()/2;
-//        final int cy = src.getHeight()/2;
-//        if(horizontal){
-//            _matrix.postScale(1, -1, cx, cy);
-//        } else {
-//            _matrix.postScale(-1,1, cx, cy);
-//        }
-//        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), _matrix, true);
-//    }
 
     static Bitmap scaleToTargetHeight(Bitmap src, final int targetHeight) {
         float ratio = targetHeight / (float) src.getHeight();

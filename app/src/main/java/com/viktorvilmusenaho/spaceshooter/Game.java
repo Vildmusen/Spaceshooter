@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.sax.EndTextElementListener;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -69,7 +68,7 @@ public class Game extends SurfaceView implements Runnable {
             _collidableEntities.add(new EnemyMeteor(_context));
         }
         for (int i = 0; i < POWER_UP_COUNT; i++) {
-            if(i % 2 == 0){
+            if (i % 2 == 0) {
                 _collidableEntities.add(new PowerUpDestroy(_context));
             } else {
                 _collidableEntities.add(new PowerUpShield(_context));
@@ -134,16 +133,20 @@ public class Game extends SurfaceView implements Runnable {
         Entity temp = null;
         for (int i = 0; i < _collidableEntities.size(); i++) {
             temp = _collidableEntities.get(i);
-            checkPlayerCollisions(temp);
+            checkPlayerCollision(temp);
             checkShotCollisions(temp);
         }
     }
 
-    private void checkPlayerCollisions(Entity e) {
+    private void checkPlayerCollision(Entity e) {
         if (_player.isColliding(e)) {
             if (e instanceof PowerUp) {
                 collision(_player, e);
-                _jukebox.play(JukeBox.PLAYER_SHOOT);
+                if(e instanceof PowerUpDestroy) {
+                    _jukebox.play(JukeBox.PLAYER_SHOOT);
+                } else {
+                    _jukebox.play(JukeBox.POWER_UP);
+                }
             } else if ((e instanceof Enemy || e instanceof EnemyMeteor) && _player._graceCounter == 0) {
                 collision(_player, e);
                 _jukebox.play(JukeBox.CRASH);
@@ -153,7 +156,7 @@ public class Game extends SurfaceView implements Runnable {
 
     private void checkShotCollisions(Entity e) {
         for (PlayerProjectile shot : _projectileEntities) {
-            if(shot._isActive && shot.isColliding(e)){
+            if (shot._isActive && shot.isColliding(e)) {
                 collision(shot, e);
                 _jukebox.play(JukeBox.CRASH);
             }
@@ -167,7 +170,7 @@ public class Game extends SurfaceView implements Runnable {
 
     public void killAllEnemies() {
         for (Entity e : _collidableEntities) {
-            if (!(e instanceof PlayerProjectile || e instanceof PowerUpShield)) {
+            if (e instanceof Enemy || e instanceof EnemyMeteor) {
                 e.respawn();
             }
         }

@@ -4,19 +4,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.util.Log;
 
 class PlayerProjectile extends BitmapEntity {
 
     private static final String TAG = "SHOT";
-    private static int COLOR = 0xFFFF0000;
-    private static int WIDTH = 25;
     private static int HEIGHT = 6;
     private static float PROJECTILE_VEL = 6f;
 
     public boolean _isActive = false;
-    private Rect _shot = null;
     private float _playerWidth;
     private float _playerHeight;
 
@@ -31,8 +26,6 @@ class PlayerProjectile extends BitmapEntity {
 
     private void loadResources(Context context) {
         try {
-            COLOR = context.getResources().getInteger(R.integer.projectile_color);
-            WIDTH = context.getResources().getInteger(R.integer.projectile_width);
             HEIGHT = context.getResources().getInteger(R.integer.projectile_height);
             PROJECTILE_VEL = context.getResources().getInteger(R.integer.projectile_velocity);
         } catch (Resources.NotFoundException e) {

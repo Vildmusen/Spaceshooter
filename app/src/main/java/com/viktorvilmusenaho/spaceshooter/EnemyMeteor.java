@@ -3,7 +3,7 @@ package com.viktorvilmusenaho.spaceshooter;
 import android.content.Context;
 import android.content.res.Resources;
 
-class EnemyMeteor extends BitmapEntity {
+public class EnemyMeteor extends BitmapEntity {
 
     private static int METEOR_HEIGHT = 40;
     private static float METEOR_VELOCITY = 4;

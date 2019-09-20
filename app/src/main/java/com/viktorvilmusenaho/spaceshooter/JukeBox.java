@@ -8,14 +8,13 @@ import android.media.SoundPool;
 
 import java.io.IOException;
 
-class JukeBox {
+public class JukeBox {
 
     private static final int MAX_STREAMS = 3;
     static int CRASH = 0;
     static int GAME_START = 0;
     static int GAME_OVER = 0;
     static int PLAYER_SHOOT = 0;
-    static int SHOT_COLLISION = 0;
     static int POWER_UP = 0;
 
     private SoundPool _soundPool;

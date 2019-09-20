@@ -1,6 +1,5 @@
 package com.viktorvilmusenaho.spaceshooter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -34,7 +33,6 @@ class UI {
     private DisplayMetrics _metrics;
     Rect _shootButton;
 
-    @SuppressLint("CommitPrefEdits")
     UI(Game game, Context context) {
         loadResources(context);
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -64,7 +62,6 @@ class UI {
         }
     }
 
-    @SuppressLint("DefaultLocale")
     public void render(Canvas canvas, Paint paint) {
         paint.setTextAlign(Paint.Align.CENTER);
         if (!_game._gameOver) {

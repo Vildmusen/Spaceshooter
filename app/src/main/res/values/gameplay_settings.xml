@@ -21,8 +21,6 @@
 
     <!--Player Projectile settings-->
     <integer name="projectile_max_count">5</integer>
-    <integer name="projectile_color">0xFFFF0000</integer>
-    <integer name="projectile_width">25</integer>
     <integer name="projectile_height">6</integer>
     <integer name="projectile_velocity">3</integer>
 

@@ -8,7 +8,7 @@ import android.util.Log;
 
 import static java.lang.Math.sin;
 
-class Enemy extends BitmapEntity {
+public class Enemy extends BitmapEntity {
 
     private static final String TAG = "Enemy";
     private static int ENEMY_HEIGHT = 80;
@@ -17,11 +17,12 @@ class Enemy extends BitmapEntity {
     private static float DIFFICULTY_MULTIPLIER = 1;
 
     private float _patternCounter = 0f;
+    private float _extraSpeed = 0f;
 
     Enemy(Context context) {
         super();
         loadResources(context);
-        int resID = randomizeSprite();
+        int resID = randomizeSpriteId();
         loadBitmap(resID, ENEMY_HEIGHT);
         _patternCounter += 3.14 * _game._rng.nextFloat();
         respawn();
@@ -41,10 +42,10 @@ class Enemy extends BitmapEntity {
         }
     }
 
-    private int randomizeSprite() {
+    private int randomizeSpriteId() {
         switch (_game._rng.nextInt(ENEMY_SPRITE_COUNT)) {
             case 0:
-                return R.drawable.spaceship1_2; //TODO sprite names as resource?
+                return R.drawable.spaceship1_2;
             case 1:
                 return R.drawable.spaceship2_2;
             case 2:
@@ -67,8 +68,11 @@ class Enemy extends BitmapEntity {
 
     @Override
     void update() {
-        _velX = -(_game._playerSpeed * (DIFFICULTY_MULTIPLIER + (_patternCounter/1000)));
-        _x += _velX;
+        if(_patternCounter % 1000 == 0){
+            _extraSpeed++;
+        }
+        _velX = -(_game._playerSpeed);
+        _x += _velX + (_extraSpeed * DIFFICULTY_MULTIPLIER);
 
         _patternCounter += 0.01f;
         _y += (float) sin(_patternCounter);
