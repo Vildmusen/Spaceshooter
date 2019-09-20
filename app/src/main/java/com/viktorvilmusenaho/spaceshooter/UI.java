@@ -104,7 +104,7 @@ class UI {
         canvas.drawText(RESTART_MESSAGE, _game.STAGE_WIDTH / 2, centerY + TEXT_SIZE_SMALL, paint);
     }
 
-    boolean shootButtonHitBox(float x, float y, float stage_width, float stage_height) {
+    boolean shootButtonPressed(float x, float y, float stage_width, float stage_height) {
         x = convertToStageWidth(x, stage_width);
         y = convertToStageHeight(y, stage_height);
         return (x < stage_width - (SHOOT_BUTTON_EDGE_OFFSET) &&

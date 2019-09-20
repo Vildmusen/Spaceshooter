@@ -7,12 +7,12 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
-class PlayerProjectile extends Entity {
+class PlayerProjectile extends BitmapEntity {
 
     private static final String TAG = "SHOT";
     private static int COLOR = 0xFFFF0000;
-    private static int WIDTH = 10;
-    private static int HEIGHT = 2;
+    private static int WIDTH = 25;
+    private static int HEIGHT = 6;
     private static float PROJECTILE_VEL = 6f;
 
     public boolean _isActive = false;
@@ -24,6 +24,8 @@ class PlayerProjectile extends Entity {
         loadResources(context);
         _playerWidth = playerWidth;
         _playerHeight = playerHeight;
+        int resID = R.drawable.rocketszt4;
+        loadBitmap(resID, HEIGHT);
         _velX = PROJECTILE_VEL;
     }
 
@@ -39,13 +41,8 @@ class PlayerProjectile extends Entity {
     }
 
     public void spawn(float x, float y) {
-        _x = x;
-        _y = y;
-        _shot = new Rect(
-                (int) (_x + _playerWidth),
-                (int) (_y + (_playerHeight / 2)),
-                (int) (_x + WIDTH + _playerWidth),
-                (int) (_y + HEIGHT + (_playerHeight / 2)));
+        _x = x + _playerWidth;
+        _y = y + (_playerHeight / 2);
     }
 
     @Override
@@ -58,31 +55,39 @@ class PlayerProjectile extends Entity {
     @Override
     void update() {
         if (!_isActive) {
-            _shot = null;
             return;
         }
         if (left() > _game.STAGE_WIDTH) {
             respawn();
         } else {
             _x += _velX;
-            _shot = new Rect(
-                    (int) (_x + _playerWidth),
-                    (int) (_y + (_playerHeight / 2)),
-                    (int) (_x + WIDTH + _playerWidth),
-                    (int) (_y + HEIGHT + (_playerHeight / 2)));
         }
     }
 
     @Override
     void render(Canvas canvas, Paint paint) {
-        if (_shot != null) {
-            paint.setColor(COLOR);
-            canvas.drawRect(_shot, paint);
+        if (_isActive) {
+            super.render(canvas, paint);
         }
     }
 
     @Override
     void onCollision(Entity that) {
         respawn();
+    }
+
+    @Override
+    boolean isColliding(Entity that) {
+        if (this == that) {
+            throw new AssertionError("isColliding: You shouldn't test Entities against themselves!");
+        }
+        return aboutToCollide(that);
+    }
+
+    private boolean aboutToCollide(Entity e) {
+        return !(right() + _velX <= e.left() + e._velX
+                || e.right() + e._velX <= left() + _velX
+                || bottom() + _velY <= e.top() + e._velY
+                || e.bottom() + e._velY <= top() + _velY);
     }
 }

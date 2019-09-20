@@ -33,6 +33,7 @@ public class Game extends SurfaceView implements Runnable {
 
     private ArrayList<Entity> _backgroundEntities = new ArrayList<>();
     public ArrayList<Entity> _collidableEntities = new ArrayList<>();
+    public ArrayList<PlayerProjectile> _projectileEntities = new ArrayList<>();
     public Player _player;
     Random _rng = new Random();
     UI _ui = null;
@@ -67,16 +68,19 @@ public class Game extends SurfaceView implements Runnable {
         for (int i = 0; i < METEOR_COUNT; i++) {
             _collidableEntities.add(new EnemyMeteor(_context));
         }
-        for (int i = 0; i < MAX_SHOTS_ONSCREEN; i++) {
-            _collidableEntities.add(new PlayerProjectile(_context, _player._width, _player._height));
-        }
         for (int i = 0; i < POWER_UP_COUNT; i++) {
             _collidableEntities.add(new PowerUp(_context));
+        }
+        for (int i = 0; i < MAX_SHOTS_ONSCREEN; i++) {
+            _projectileEntities.add(new PlayerProjectile(_context, _player._width, _player._height));
         }
     }
 
     private void restart() {
         for (Entity e : _collidableEntities) {
+            e.respawn();
+        }
+        for (Entity e : _projectileEntities) {
             e.respawn();
         }
         _player.respawn();
@@ -105,6 +109,9 @@ public class Game extends SurfaceView implements Runnable {
         for (Entity e : _collidableEntities) {
             e.update();
         }
+        for (Entity e : _projectileEntities) {
+            e.update();
+        }
 
         _distanceTraveled++;
         checkCollisions();
@@ -124,35 +131,27 @@ public class Game extends SurfaceView implements Runnable {
         for (int i = 0; i < _collidableEntities.size(); i++) {
             temp = _collidableEntities.get(i);
             checkPlayerCollisions(temp);
-            checkAllCollisions(temp);
+            checkShotCollisions(temp);
         }
     }
 
     private void checkPlayerCollisions(Entity e) {
         if (_player.isColliding(e)) {
-            if (e instanceof PlayerProjectile) {
-                return;
-            } else if (e instanceof PowerUp) {
+            if (e instanceof PowerUp) {
                 collision(_player, e);
+                _jukebox.play(JukeBox.PLAYER_SHOOT);
             } else if ((e instanceof Enemy || e instanceof EnemyMeteor) && _player._graceCounter == 0) {
                 collision(_player, e);
+                _jukebox.play(JukeBox.CRASH);
             }
         }
     }
 
-    private void checkAllCollisions(Entity e) {
-        for (Entity temp : _collidableEntities) {
-            if (temp != e && temp.isColliding(e)) {
-                if (e instanceof PlayerProjectile && (temp instanceof Enemy || temp instanceof EnemyMeteor || temp instanceof PowerUp)) {
-                    collision(temp, e);
-                } else if (e instanceof Enemy && temp instanceof PlayerProjectile) {
-                    collision(temp, e);
-                } else if (e instanceof EnemyMeteor && temp instanceof PlayerProjectile) {
-                    collision(temp, e);
-                } else if (e instanceof PowerUp && temp instanceof PlayerProjectile) {
-                    collision(temp, e);
-                }
-
+    private void checkShotCollisions(Entity e) {
+        for (PlayerProjectile shot : _projectileEntities) {
+            if(shot._isActive && shot.isColliding(e)){
+                collision(shot, e);
+                _jukebox.play(JukeBox.CRASH);
             }
         }
     }
@@ -160,7 +159,6 @@ public class Game extends SurfaceView implements Runnable {
     private void collision(Entity a, Entity b) {
         a.onCollision(b);
         b.onCollision(a);
-        _jukebox.play(JukeBox.CRASH);
     }
 
     public void killAllEnemies() {
@@ -171,10 +169,10 @@ public class Game extends SurfaceView implements Runnable {
         }
     }
 
-    public int shotsOnScreen(){
+    public int shotsOnScreen() {
         int count = 0;
-        for (Entity e : _collidableEntities) {
-            if (e instanceof PlayerProjectile && ((PlayerProjectile) e)._isActive) {
+        for (PlayerProjectile e : _projectileEntities) {
+            if (e._isActive) {
                 count++;
             }
         }
@@ -193,6 +191,9 @@ public class Game extends SurfaceView implements Runnable {
             e.render(_canvas, _paint);
         }
         for (Entity e : _collidableEntities) {
+            e.render(_canvas, _paint);
+        }
+        for (Entity e : _projectileEntities) {
             e.render(_canvas, _paint);
         }
         if (_player._graceCounter % 2 != 1) { // "blink" every other frame during players grace period
@@ -238,6 +239,9 @@ public class Game extends SurfaceView implements Runnable {
         for (Entity e : _collidableEntities) {
             e.destroy();
         }
+        for (Entity e : _projectileEntities) {
+            e.destroy();
+        }
         _jukebox.destroy();
         Entity._game = null;
     }
@@ -264,7 +268,7 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private void checkPress(float x, float y) {
-        if (_ui.shootButtonHitBox(x, y, STAGE_WIDTH, STAGE_HEIGHT)) {
+        if (_ui.shootButtonPressed(x, y, STAGE_WIDTH, STAGE_HEIGHT)) {
             PlayerProjectile shot = findInactiveProjectile();
             if (shot != null) {
                 shot._isActive = true;
@@ -277,12 +281,9 @@ public class Game extends SurfaceView implements Runnable {
     }
 
     private PlayerProjectile findInactiveProjectile() {
-        for (Entity e : _collidableEntities) {
-            if (e instanceof PlayerProjectile) {
-                PlayerProjectile temp = (PlayerProjectile) e;
-                if (!temp._isActive) {
-                    return temp;
-                }
+        for (PlayerProjectile e : _projectileEntities) {
+            if (!e._isActive) {
+                return e;
             }
         }
         return null;
