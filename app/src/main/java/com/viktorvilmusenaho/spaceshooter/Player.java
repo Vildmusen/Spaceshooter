@@ -78,6 +78,7 @@ class Player extends BitmapEntity {
     void onCollision(Entity that) {
         if(!(that instanceof PowerUp)){
             if (_shield != null && _shield._isActive) {
+                _graceCounter = RECOVERY_FRAMES;
                 _shield.respawn();
                 _shield = null;
                 return;

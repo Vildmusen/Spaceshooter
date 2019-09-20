@@ -5,6 +5,7 @@
     <integer name="stage_height">720</integer>
     <integer name="text_size_small">48</integer>
     <integer name="text_size_big">150</integer>
+    <string name="difficulty_multiplier">1.5</string>
     <string name="gravity">1.1</string>
 
     <!--Player settings-->

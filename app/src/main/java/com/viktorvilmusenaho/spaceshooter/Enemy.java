@@ -14,6 +14,7 @@ class Enemy extends BitmapEntity {
     private static int ENEMY_HEIGHT = 80;
     private static int ENEMY_SPAWN_OFFSET = _game.STAGE_WIDTH;
     private static int ENEMY_SPRITE_COUNT = 3;
+    private static float DIFFICULTY_MULTIPLIER = 1;
 
     private float _patternCounter = 0f;
 
@@ -30,6 +31,11 @@ class Enemy extends BitmapEntity {
         try {
             ENEMY_HEIGHT = context.getResources().getInteger(R.integer.enemy_height);
             ENEMY_SPRITE_COUNT = context.getResources().getInteger(R.integer.enemy_sprite_count);
+            try{
+                DIFFICULTY_MULTIPLIER = Float.parseFloat(context.getResources().getString(R.string.difficulty_multiplier));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
@@ -61,7 +67,7 @@ class Enemy extends BitmapEntity {
 
     @Override
     void update() {
-        _velX = -(_game._playerSpeed);
+        _velX = -(_game._playerSpeed * (DIFFICULTY_MULTIPLIER + (_patternCounter/1000)));
         _x += _velX;
 
         _patternCounter += 0.01f;

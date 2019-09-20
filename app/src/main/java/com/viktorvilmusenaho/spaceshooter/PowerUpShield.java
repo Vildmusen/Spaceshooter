@@ -7,6 +7,8 @@ import android.graphics.Paint;
 
 public class PowerUpShield extends PowerUp {
 
+    private static int SHIELD_THICKNESS = 5;
+
     public boolean _isActive = false;
 
     PowerUpShield(Context context) {
@@ -31,7 +33,10 @@ public class PowerUpShield extends PowerUp {
         if(!_isActive){
             super.render(canvas, paint);
         } else {
+            paint.setColor(Color.BLUE);
             canvas.drawCircle(_game._player.centerX(), _game._player.centerY(), (_game._player._width / 2), paint);
+            paint.setColor(Color.BLACK);
+            canvas.drawCircle(_game._player.centerX(), _game._player.centerY(), (_game._player._width / 2) - SHIELD_THICKNESS, paint);
         }
     }
 
