@@ -45,7 +45,7 @@
     <integer name="meteor_velocity">4</integer>
 
     <!--Power Up settings-->
-    <integer name="power_up_count">1</integer>
+    <integer name="power_up_count">2</integer>
     <integer name="power_up_size">80</integer>
     <integer name="power_up_velocity">8</integer>
 </resources>

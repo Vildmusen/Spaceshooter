@@ -69,7 +69,11 @@ public class Game extends SurfaceView implements Runnable {
             _collidableEntities.add(new EnemyMeteor(_context));
         }
         for (int i = 0; i < POWER_UP_COUNT; i++) {
-            _collidableEntities.add(new PowerUp(_context));
+            if(i % 2 == 0){
+                _collidableEntities.add(new PowerUpDestroy(_context));
+            } else {
+                _collidableEntities.add(new PowerUpShield(_context));
+            }
         }
         for (int i = 0; i < MAX_SHOTS_ONSCREEN; i++) {
             _projectileEntities.add(new PlayerProjectile(_context, _player._width, _player._height));
@@ -163,7 +167,7 @@ public class Game extends SurfaceView implements Runnable {
 
     public void killAllEnemies() {
         for (Entity e : _collidableEntities) {
-            if (!(e instanceof PlayerProjectile)) {
+            if (!(e instanceof PlayerProjectile || e instanceof PowerUpShield)) {
                 e.respawn();
             }
         }

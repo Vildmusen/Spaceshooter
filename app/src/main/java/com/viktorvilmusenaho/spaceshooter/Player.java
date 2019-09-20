@@ -19,6 +19,7 @@ class Player extends BitmapEntity {
 
     int _health = PLAYER_HEALTH;
     int _graceCounter = 0;
+    PowerUpShield _shield = null;
 
     Player(Context context) {
         super();
@@ -76,6 +77,11 @@ class Player extends BitmapEntity {
     @Override
     void onCollision(Entity that) {
         if(!(that instanceof PowerUp)){
+            if (_shield != null && _shield._isActive) {
+                _shield.respawn();
+                _shield = null;
+                return;
+            }
             if (_graceCounter == 0) {
                 _graceCounter = RECOVERY_FRAMES;
                 _health--;
@@ -83,6 +89,10 @@ class Player extends BitmapEntity {
                 IsRecovering();
             }
         }
+    }
+
+    public void setShield(PowerUpShield shield) {
+        _shield = shield;
     }
 
     private void IsRecovering() {
